@@ -1,0 +1,41 @@
+---
+
+- hosts: localhost
+  tasks:
+  - name: authenticate to cyberark
+    cyberark.pas.cyberark_authentication:
+      api_base_url: "https://cyber.example.com"
+      validate_certs: false
+      username: ""
+      password: ""
+
+  - name: get account status from cyberark
+    cyberark.pas.cyberark_account:
+      identified_by: "address,username"
+      safe: "Linux Accounts"
+      address: "rhel07.example.com"
+      username: "someuser"
+      state: present
+      cyberark_session: "{{ cyberark_session }}"
+    register: getaccount
+
+  - name: print account reconcile status
+    ansible.builtin.debug:
+      var: getaccount
+
+  - name: reconcile account
+    cyberark.pas.cyberark_account:
+      identified_by: "address,username"
+      safe: "Linux Accounts"
+      address: "rhel07.example.com"
+      username: "someuser"
+      secret_management:
+          management_action: "reconcile"
+          automatic_management_enabled: true
+      state: present
+      cyberark_session: "{{ cyberark_session }}"
+    register: reconcileaccount
+
+  - name: 
+    ansible.builtin.debug:
+      var: reconcileaccount
